@@ -17,12 +17,11 @@ import edu.wpi.first.wpilibj2.command.Command;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final Drivetrain m_Drivetrain = new Drivetrain();
-
-  private final TankDrive m_TankDrive = new TankDrive(m_Drivetrain);
-  private final CarDrive m_CarDrive = new CarDrive(m_Drivetrain);
-  private final ArcadeDrive m_ArcadeDrive = new ArcadeDrive(m_Drivetrain);
+//  // The robot's subsystems and commands are defined here...
+//
+//  private final TankDrive m_TankDrive = new TankDrive(m_Drivetrain);
+//  private final CarDrive m_CarDrive = new CarDrive(m_Drivetrain);
+//  private final ArcadeDrive m_ArcadeDrive = new ArcadeDrive(m_Drivetrain);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -45,6 +44,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_TankDrive;
+    return null;
   }
 }

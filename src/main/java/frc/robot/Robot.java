@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.CarDrive;
 import frc.robot.commands.TankDrive;
@@ -27,12 +28,19 @@ public class Robot extends TimedRobot {
 
   public static Joystick joystick = new Joystick(0);
 
+  JoystickButton buttonB = new JoystickButton(joystick, 2);
+  JoystickButton buttonX = new JoystickButton(joystick, 3);
+
   private Command m_autonomousCommand;
 
-  private RobotContainer m_robotContainer;
   public DriveMode driveMode;
 
   enum DriveMode {CAR,ARCADE,TANK};
+
+//  private CarDrive carDrive = new CarDrive(drivetrain);
+//  private ArcadeDrive arcadeDrive = new ArcadeDrive(drivetrain);
+//  private TankDrive tankDrive = new TankDrive(drivetrain);
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -41,8 +49,10 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
+    CommandScheduler.getInstance().setDefaultCommand(drivetrain, new CarDrive(drivetrain));
     driveMode = DriveMode.CAR;
+    buttonB.whenHeld(new ArcadeDrive(drivetrain));
+    buttonX.whenHeld(new TankDrive(drivetrain));
   }
 
   /**
@@ -71,7 +81,6 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -93,18 +102,18 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    driveMode = (Robot.joystick.getRawButton(2) == true)? incrimentDrivemode() : driveMode;
-    switch (getDriveMode()){
-      case CAR:
-        new CarDrive(drivetrain);
-        break;
-      case TANK:
-        new TankDrive(drivetrain);
-        break;
-      case ARCADE:
-        new ArcadeDrive(drivetrain);
-        break;
-    }
+//    driveMode = (Robot.joystick.getRawButton(2) == true)? incrimentDrivemode() : driveMode;
+//    switch (getDriveMode()){
+//      case CAR:
+//        new CarDrive(drivetrain);
+//        break;
+//      case TANK:
+//        new TankDrive(drivetrain);
+//        break;
+//      case ARCADE:
+//        new ArcadeDrive(drivetrain);
+//        break;
+//    }
   }
 
   @Override
@@ -121,4 +130,8 @@ public class Robot extends TimedRobot {
   }
 
   public DriveMode getDriveMode(){return driveMode;}
+
+  public static double controllerHandler(int id){
+    return (joystick.getRawAxis(id) < -0.1 || joystick.getRawAxis(id) > 0.1)? joystick.getRawAxis(id) : 0;
+  }
 }

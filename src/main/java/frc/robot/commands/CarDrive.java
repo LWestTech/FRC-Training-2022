@@ -16,16 +16,17 @@ public class CarDrive extends CommandBase{
 
     @Override
     public void initialize() {
+        Gas = Robot.controllerHandler(3); //TODO: Find the correct axis
+        Steering = Robot.controllerHandler(2);
 
+        Robot.drivetrain.setLeftSpeed(Gas + Steering);
+        Robot.drivetrain.setLeftSpeed(Gas - Steering);
+        end(false);
     }
 
     @Override
     public void execute(){
-        Gas = Robot.joystick.getRawAxis(3); //TODO: Find the correct axis
-        Steering = Robot.joystick.getRawAxis(2);
 
-        Robot.drivetrain.setLeftSpeed(Gas + Steering);
-        Robot.drivetrain.setLeftSpeed(Gas - Steering);
     }
 
     @Override
