@@ -4,10 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.*;
+import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.CarDrive;
 import frc.robot.commands.TankDrive;
 import frc.robot.subsystems.Drivetrain;
 
@@ -26,7 +30,9 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  public DriveMode driveMode;
 
+  enum DriveMode {CAR,ARCADE,TANK};
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -36,7 +42,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    CommandScheduler.getInstance().setDefaultCommand(new Drivetrain(), new TankDrive(drivetrain));
+    driveMode = DriveMode.CAR;
   }
 
   /**
@@ -79,26 +85,40 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
-    }
+    } // Stops autonomous
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    driveMode = (Robot.joystick.getRawButton(2) == true)? incrimentDrivemode() : driveMode;
+    switch (getDriveMode()){
+      case CAR:
+        new CarDrive(drivetrain);
+        break;
+      case TANK:
+        new TankDrive(drivetrain);
+        break;
+      case ARCADE:
+        new ArcadeDrive(drivetrain);
+        break;
+    }
+  }
 
   @Override
   public void testInit() {
-    // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
+    CommandScheduler.getInstance().cancelAll(); // Cancels all running commands at the start of test mode.
   }
 
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
+
+  private DriveMode incrimentDrivemode(){
+    return DriveMode.values()[(driveMode.ordinal()+1)%DriveMode.values().length];
+  }
+
+  public DriveMode getDriveMode(){return driveMode;}
 }
